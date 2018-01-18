@@ -1,7 +1,7 @@
 ---
-title: "STAT540 Sem2"
+title: "Untitled"
 author: "Julia A"
-date: "December 28, 2017"
+date: "January 10, 2018"
 output: html_document
 ---
 
@@ -15,21 +15,13 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-Two plus two
-equals `r 2 + 2`
-
-```{r}
-  dim(iris)
-```
-
-```{r}
- print ("Hello World")
-```
-
 ```{r cars}
 summary(cars)
 ```
 
+```{r}
+print("Hello")
+```
 ## Including Plots
 
 You can also embed plots, for example:
@@ -37,6 +29,5 @@ You can also embed plots, for example:
 ```{r pressure, echo=FALSE}
 plot(pressure)
 ```
-
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
