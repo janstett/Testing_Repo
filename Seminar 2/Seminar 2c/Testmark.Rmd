@@ -3,6 +3,7 @@ title: "Seminar 2c"
 author: "Julia A"
 date: "January 17, 2018"
 output: html_document
+keep_md: true
 ---
 
 ```{r setup, include=FALSE}
