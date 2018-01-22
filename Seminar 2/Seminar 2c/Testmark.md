@@ -1,28 +1,50 @@
----
-title: "Seminar 2c"
-author: "Julia A"
-date: "January 17, 2018"
-output: github_document
----
+Seminar 2c
+================
+Julia A
+January 17, 2018
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+Part 0
+------
 
-## Part 0
+Inistiallize Libraries
+----------------------
 
-
-## Inistiallize Libraries
-
-```{r}
+``` r
 #install.packages("tidyverse")
 library(tidyverse)
 ```
 
-## Part 1
+    ## Warning: package 'tidyverse' was built under R version 3.3.3
 
+    ## -- Attaching packages ---------------------------------- tidyverse 1.2.1 --
 
-```{r}
+    ## v ggplot2 2.2.1     v purrr   0.2.4
+    ## v tibble  1.4.1     v dplyr   0.7.4
+    ## v tidyr   0.7.2     v stringr 1.2.0
+    ## v readr   1.1.1     v forcats 0.2.0
+
+    ## Warning: package 'ggplot2' was built under R version 3.3.3
+
+    ## Warning: package 'tibble' was built under R version 3.3.3
+
+    ## Warning: package 'tidyr' was built under R version 3.3.3
+
+    ## Warning: package 'readr' was built under R version 3.3.3
+
+    ## Warning: package 'purrr' was built under R version 3.3.3
+
+    ## Warning: package 'dplyr' was built under R version 3.3.3
+
+    ## Warning: package 'forcats' was built under R version 3.3.3
+
+    ## -- Conflicts ------------------------------------- tidyverse_conflicts() --
+    ## x dplyr::filter() masks stats::filter()
+    ## x dplyr::lag()    masks stats::lag()
+
+Part 1
+------
+
+``` r
 all_possible_heights <- seq(from = 140, to = 160, length = 100)
 probability_values_less_spread <- dnorm(all_possible_heights, mean = 150, sd = 2)
 probability_values_more_spread <- dnorm(all_possible_heights, mean = 150, sd = 3)
@@ -36,9 +58,12 @@ tibble(height = all_possible_heights,
   xlab("height (cm)")
 ```
 
-## Part 2
+![](Testmark_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
-```{r}
+Part 2
+------
+
+``` r
 xValues <- seq(from = -5, to = 5, length = 100)
 plotA <- dnorm(xValues, mean = 0, sd = 0.5) #
 plotB <-  dnorm(xValues, mean = 0, sd = 1)
@@ -61,9 +86,12 @@ p +
   ylab("f(x)")
 ```
 
-## Part 3
+![](Testmark_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
-```{r}
+Part 3
+------
+
+``` r
 meanValue <- 0
 standardDeviation <- 1
 numVals <- 100
@@ -83,9 +111,11 @@ dataFrame %>% ggplot() +
     ylab("")
 ```
 
-###Part 4
+![](Testmark_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
-```{r}
+### Part 4
+
+``` r
 degreeFreedom <- 1
 
 xValues <- seq(from = 0, to = 20, length = 1000)
@@ -97,3 +127,5 @@ dataFrame <- tibble(x = xValues,
 dataFrame %>% ggplot() +
   geom_line(aes(x = x, y = probability), color = "blue")
 ```
+
+![](Testmark_files/figure-markdown_github/unnamed-chunk-5-1.png)
