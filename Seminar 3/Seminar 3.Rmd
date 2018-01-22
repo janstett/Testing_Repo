@@ -7,22 +7,11 @@ output: github_document
 
 # Install The Following
 ```{r}
-#source("https://bioconductor.org/biocLite.R")
-#BiocInstaller::biocLite('grimbough/biomaRt')
-#biocLite("GEOquery")
-#biocLite("biomaRt")
-install.packages("XML")
 library (XML)
-#install.packages("GEOquery")
 library(GEOquery)
-#install.packages("digest")
-#install.packages("biomaRt")
 library(biomaRt)
-#install.packages("tidyverse")
 library(tidyverse)
-#install.packages("data.table")
 library(data.table)
-#install.packages("reshape2")
 library(reshape2)
 ```
 
