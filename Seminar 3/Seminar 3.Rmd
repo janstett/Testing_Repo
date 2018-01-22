@@ -113,20 +113,21 @@ melted_data %>%
 new_melted_data <- melted_data %>% 
     group_by(Sample, IDENTIFIER) %>% 
     summarize(Count = mean(value))
-
+```
+```{r}
 #open connection between biomaRt and R. 
-human <- useMart(biomart = "ENSEMBL_MART_ENSEMBL",dataset = "hsapiens_gene_ensembl", host = "http://www.ensembl.org" )
+#human <- useMart(biomart = "ENSEMBL_MART_ENSEMBL",dataset = "hsapiens_gene_ensembl", host = #"http://www.ensembl.org" )
 
 #function that takes in data frame, and outputs same data frame with associated chromosome annotations.
-identify_gene_names <- function(df){
-    names(df) <- c("Sample", "hgnc_symbol", "Count")
-    names <- getBM( attributes=c("hgnc_symbol", "chromosome_name", "transcript_length") , filters= "hgnc_symbol", values = df$hgnc_symbol, mart = human)
-    left_join(df, names, by = "hgnc_symbol")
-}
+#identify_gene_names <- function(df){
+#    names(df) <- c("Sample", "hgnc_symbol", "Count")
+#    names <- getBM( attributes=c("hgnc_symbol", "chromosome_name", "transcript_length") , filters= #"hgnc_symbol", values = df$hgnc_symbol, mart = human)
+#    left_join(df, names, by = "hgnc_symbol")
+#}
 
 #There's a lot of variation in how the chromosomal location is annotated. To simplify things, let's filter out all genes with annotations that are not numeric numbers between 1 and 23, X or Y. 
-data_with_chromosome <- identify_gene_names(new_melted_data) %>% 
-    filter(chromosome_name %in% c(1:23, "X", "Y"))
+#data_with_chromosome <- identify_gene_names(new_melted_data) %>% 
+#    filter(chromosome_name %in% c(1:23, "X", "Y"))
 ```
 
 ```{r}
