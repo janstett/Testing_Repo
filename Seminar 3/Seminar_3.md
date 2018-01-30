@@ -1,16 +1,16 @@
 Seminar 3
 ================
 Julia A
-January 17, 2018
+January 22, 2018
 
 Install The Following
 =====================
 
 ``` r
-library (XML)
+library(knitr)
 ```
 
-    ## Warning: package 'XML' was built under R version 3.3.3
+    ## Warning: package 'knitr' was built under R version 3.3.3
 
 ``` r
 library(GEOquery)
@@ -133,7 +133,7 @@ gds <- getGEO("GDS507")
 
     ## File stored at:
 
-    ## C:\Users\Julia\AppData\Local\Temp\RtmpKUQabP/GDS507.soft.gz
+    ## C:\Users\Julia\AppData\Local\Temp\RtmpAPFyup/GDS507.soft.gz
 
 ``` r
 str(gds)
@@ -197,13 +197,8 @@ str(gds)
     ##   .. ..$ web_link                : chr "http://www.ncbi.nlm.nih.gov/geo"
 
 ``` r
-meta_data <- data.frame(Sample = gds@dataTable@columns$sample, disease = gds@dataTable@columns$disease.state)
-#we grab this info from the appropriate slots above. 
-
+meta_data <- data.frame(Sample = gds@dataTable@columns$sample, disease = gds@dataTable@columns$disease.state) #we grab this info from the appropriate slots above. 
 data <- gds@dataTable@table
-```
-
-``` r
 head(data)
 ```
 
@@ -230,25 +225,12 @@ head(data)
     ## 6   7949.2   9486.5   7494.5   7252.1
 
 ``` r
-nrow(data)
-```
-
-    ## [1] 22645
-
-``` r
-ncol(data)
-```
-
-    ## [1] 19
-
-``` r
 dim(data)
 ```
 
     ## [1] 22645    19
 
 ``` r
-#We exclude the first and second columns because they hold the probe and gene names, respectively. 
 apply(data[,-c(1, 2)], 2, median)
 ```
 
@@ -258,121 +240,6 @@ apply(data[,-c(1, 2)], 2, median)
     ##    264.4    273.8    264.6    266.5    269.3    288.6    238.7    244.5 
     ## GSM12448 
     ##    264.3
-
-Iris
-====
-
-``` r
-head(iris)
-```
-
-    ##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-    ## 1          5.1         3.5          1.4         0.2  setosa
-    ## 2          4.9         3.0          1.4         0.2  setosa
-    ## 3          4.7         3.2          1.3         0.2  setosa
-    ## 4          4.6         3.1          1.5         0.2  setosa
-    ## 5          5.0         3.6          1.4         0.2  setosa
-    ## 6          5.4         3.9          1.7         0.4  setosa
-
-``` r
-#select all rows with sepal length greater than 5. 
-iris %>% 
-    filter(Sepal.Length > 5) %>% 
-    head()
-```
-
-    ## Warning: package 'bindrcpp' was built under R version 3.3.3
-
-    ##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-    ## 1          5.1         3.5          1.4         0.2  setosa
-    ## 2          5.4         3.9          1.7         0.4  setosa
-    ## 3          5.4         3.7          1.5         0.2  setosa
-    ## 4          5.8         4.0          1.2         0.2  setosa
-    ## 5          5.7         4.4          1.5         0.4  setosa
-    ## 6          5.4         3.9          1.3         0.4  setosa
-
-``` r
-#group all rows of the same species together.
-iris %>% 
-    group_by(Species) %>% 
-    head()
-```
-
-    ## # A tibble: 6 x 5
-    ## # Groups: Species [1]
-    ##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-    ##          <dbl>       <dbl>        <dbl>       <dbl> <fct>  
-    ## 1         5.10        3.50         1.40       0.200 setosa 
-    ## 2         4.90        3.00         1.40       0.200 setosa 
-    ## 3         4.70        3.20         1.30       0.200 setosa 
-    ## 4         4.60        3.10         1.50       0.200 setosa 
-    ## 5         5.00        3.60         1.40       0.200 setosa 
-    ## 6         5.40        3.90         1.70       0.400 setosa
-
-``` r
-#select the column called "Sepal.Width"
-iris %>% 
-    dplyr::select(Sepal.Width) %>% 
-    head()
-```
-
-    ##   Sepal.Width
-    ## 1         3.5
-    ## 2         3.0
-    ## 3         3.2
-    ## 4         3.1
-    ## 5         3.6
-    ## 6         3.9
-
-``` r
-#create another column with the species name capitalized. 
-iris %>%
-    group_by(Species) %>% 
-    mutate(Capitalized_names = toupper(Species)) %>% 
-    head()
-```
-
-    ## # A tibble: 6 x 6
-    ## # Groups: Species [1]
-    ##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-    ##          <dbl>       <dbl>        <dbl>       <dbl> <fct>  
-    ## 1         5.10        3.50         1.40       0.200 setosa 
-    ## 2         4.90        3.00         1.40       0.200 setosa 
-    ## 3         4.70        3.20         1.30       0.200 setosa 
-    ## 4         4.60        3.10         1.50       0.200 setosa 
-    ## 5         5.00        3.60         1.40       0.200 setosa 
-    ## 6         5.40        3.90         1.70       0.400 setosa 
-    ## # ... with 1 more variable: Capitalized_names <chr>
-
-``` r
-#summarize the average sepal length and number of rows belonging to each species.
-iris %>% 
-    group_by(Species) %>% 
-    summarize(average_sepal_length = mean(Sepal.Length), n = n()) %>% 
-    head()
-```
-
-    ## # A tibble: 3 x 3
-    ##   Species    average_sepal_length     n
-    ##   <fct>                     <dbl> <int>
-    ## 1 setosa                     5.01    50
-    ## 2 versicolor                 5.94    50
-    ## 3 virginica                  6.59    50
-
-``` r
-#arrange the species in alphabetical order
-iris %>% 
-    arrange(desc(Species)) %>% 
-    head()
-```
-
-    ##   Sepal.Length Sepal.Width Petal.Length Petal.Width   Species
-    ## 1          6.3         3.3          6.0         2.5 virginica
-    ## 2          5.8         2.7          5.1         1.9 virginica
-    ## 3          7.1         3.0          5.9         2.1 virginica
-    ## 4          6.3         2.9          5.6         1.8 virginica
-    ## 5          6.5         3.0          5.8         2.2 virginica
-    ## 6          7.6         3.0          6.6         2.1 virginica
 
 ``` r
 melted_data <- melt(data, id.vars = c("ID_REF", "IDENTIFIER"), var = "Sample")
@@ -388,6 +255,7 @@ head(melted_data)
     ## 6   200005_at      EIF3D GSM11815  8824.5
 
 ``` r
+#mean gene expression per sample
 melted_data %>% 
     group_by(Sample) %>% 
     summarize(mean = mean(value))
@@ -415,128 +283,35 @@ melted_data %>%
     ## 17 GSM12448   757
 
 ``` r
+#mean of each probe's expression
 new_melted_data <- melted_data %>% 
     group_by(Sample, IDENTIFIER) %>% 
     summarize(Count = mean(value))
-```
 
-``` r
-#open connection between biomaRt and R. 
-human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 #function that takes in data frame, and outputs same data frame with associated chromosome annotations.
 identify_gene_names <- function(df){
     names(df) <- c("Sample", "hgnc_symbol", "Count")
-    names <- getBM( attributes=c("hgnc_symbol", "chromosome_name") , filters= "hgnc_symbol", values = df$hgnc_symbol, mart = human)
+    names <- getBM(attributes=c("hgnc_symbol", "chromosome_name") , filters= "hgnc_symbol", values = df$hgnc_symbol, mart = human)
     left_join(df, names, by = "hgnc_symbol")
 }
 
-#There's a lot of variation in how the chromosomal location is annotated. To simplify things, let's filter out all genes with annotations that are not numeric numbers between 1 and 23, X or Y. 
-data_with_chromosome <- identify_gene_names(new_melted_data) %>% 
-    filter(chromosome_name %in% c(1:23, "X", "Y"))
-```
+data_with_chromosome <- read.csv("https://raw.githubusercontent.com/STAT540-UBC/STAT540-UBC.github.io/master/seminars/seminars_winter_2017/Seminar3/biomart_output.csv", header=TRUE)
 
-    ## Warning: Column `hgnc_symbol` joining factor and character vector, coercing
-    ## into character vector
-
-Part 2
-======
-
-``` r
-#We exclude the first and second columns because they hold the probe and gene names, respectively. 
-apply(data[,-c(1, 2)], 2, median)
-```
-
-    ## GSM11815 GSM11832 GSM12069 GSM12083 GSM12101 GSM12106 GSM12274 GSM12299 
-    ##    265.6    250.3    218.5    309.7    281.9    240.1    280.2    217.0 
-    ## GSM12412 GSM11810 GSM11827 GSM12078 GSM12099 GSM12269 GSM12287 GSM12301 
-    ##    264.4    273.8    264.6    266.5    269.3    288.6    238.7    244.5 
-    ## GSM12448 
-    ##    264.3
-
-``` r
-melted_data <- melt(data, id.vars = c("ID_REF", "IDENTIFIER"), var = "Sample")
-head(melted_data)
-```
-
-    ##        ID_REF IDENTIFIER   Sample   value
-    ## 1 200000_s_at      PRPF8 GSM11815  4254.0
-    ## 2   200001_at     CAPNS1 GSM11815 17996.2
-    ## 3   200002_at      RPL35 GSM11815 41678.8
-    ## 4 200003_s_at    MIR6805 GSM11815 65390.9
-    ## 5   200004_at     EIF4G2 GSM11815 19030.1
-    ## 6   200005_at      EIF3D GSM11815  8824.5
-
-``` r
-melted_data %>% 
-    group_by(Sample) %>% 
-    summarize(mean = mean(value))
-```
-
-    ## # A tibble: 17 x 2
-    ##    Sample    mean
-    ##    <fct>    <dbl>
-    ##  1 GSM11815   751
-    ##  2 GSM11832   742
-    ##  3 GSM12069   748
-    ##  4 GSM12083   735
-    ##  5 GSM12101   803
-    ##  6 GSM12106   744
-    ##  7 GSM12274   761
-    ##  8 GSM12299   802
-    ##  9 GSM12412   685
-    ## 10 GSM11810   765
-    ## 11 GSM11827   780
-    ## 12 GSM12078   774
-    ## 13 GSM12099   766
-    ## 14 GSM12269   710
-    ## 15 GSM12287   791
-    ## 16 GSM12301   770
-    ## 17 GSM12448   757
-
-``` r
-new_melted_data <- melted_data %>% 
-    group_by(Sample, IDENTIFIER) %>% 
-    summarize(Count = mean(value))
-```
-
-``` r
-#open connection between biomaRt and R. 
-#human <- useMart(biomart = "ENSEMBL_MART_ENSEMBL",dataset = "hsapiens_gene_ensembl", host = #"http://www.ensembl.org" )
-
-#function that takes in data frame, and outputs same data frame with associated chromosome annotations.
-#identify_gene_names <- function(df){
-#    names(df) <- c("Sample", "hgnc_symbol", "Count")
-#    names <- getBM( attributes=c("hgnc_symbol", "chromosome_name", "transcript_length") , filters= #"hgnc_symbol", values = df$hgnc_symbol, mart = human)
-#    left_join(df, names, by = "hgnc_symbol")
-#}
-
-#There's a lot of variation in how the chromosomal location is annotated. To simplify things, let's filter out all genes with annotations that are not numeric numbers between 1 and 23, X or Y. 
-#data_with_chromosome <- identify_gene_names(new_melted_data) %>% 
-#    filter(chromosome_name %in% c(1:23, "X", "Y"))
-```
-
-``` r
 full_data <- left_join(data_with_chromosome, meta_data, by = "Sample")
-```
 
-    ## Warning: Column `Sample` joining factors with different levels, coercing to
-    ## character vector
-
-``` r
 full_data %>% 
     group_by(disease) %>% 
     filter(chromosome_name == "X") %>% 
     summarize(mean = mean(Count))
 ```
 
+    ## Warning: package 'bindrcpp' was built under R version 3.3.3
+
     ## # A tibble: 2 x 2
     ##   disease  mean
     ##   <fct>   <dbl>
     ## 1 normal    729
     ## 2 RCC       674
-
-Part 3
-======
 
 ``` r
 #choose random number between 1 and however many genes we have. 
@@ -546,8 +321,41 @@ names_to_choose <- as.character(unique(full_data$hgnc_symbol)[sample_to_choose])
 
 full_data %>% 
     filter(hgnc_symbol %in% names_to_choose) %>% 
-    group_by(Sample) %>% 
-    ggplot(aes(x = as.factor(chromosome_name), y = Count)) + geom_point()
+    group_by(Sample) %>% mutate(relExp = Count/sum(Count)) %>%
+    ggplot(aes(x = as.factor(chromosome_name), y = relExp)) + geom_point()
 ```
 
-![](Seminar_3_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](Seminar_3_files/figure-markdown_github/unnamed-chunk-2-1.png)
+
+``` r
+full_data %>% 
+    group_by(hgnc_symbol) %>% 
+   summarize( pvalue = t.test(Count ~ disease)$p.value) %>%
+   ggplot(aes(x = pvalue)) + geom_density() 
+```
+
+![](Seminar_3_files/figure-markdown_github/unnamed-chunk-2-2.png)
+
+``` r
+data_05 <- full_data %>% 
+    group_by(hgnc_symbol) %>% 
+    summarize(pvalue = t.test(Count ~ disease)$p.value) %>% 
+  filter(pvalue < 0.05)
+
+data_05
+```
+
+    ## # A tibble: 2,531 x 2
+    ##    hgnc_symbol   pvalue
+    ##    <fct>          <dbl>
+    ##  1 A1BG-AS1    0.0366  
+    ##  2 A2MP1       0.0245  
+    ##  3 AADAT       0.0304  
+    ##  4 AAED1       0.0367  
+    ##  5 AAK1        0.0229  
+    ##  6 AARS2       0.0416  
+    ##  7 ABCB1       0.00351 
+    ##  8 ABCB10      0.0302  
+    ##  9 ABCC3       0.0342  
+    ## 10 ABCC6P1     0.000528
+    ## # ... with 2,521 more rows

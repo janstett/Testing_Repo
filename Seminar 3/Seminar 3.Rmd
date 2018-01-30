@@ -1,13 +1,13 @@
 ---
 title: "Seminar 3"
 author: "Julia A"
-date: "January 17, 2018"
+date: "January 22, 2018"
 output: github_document
 ---
 
 # Install The Following
 ```{r}
-library (XML)
+library(knitr)
 library(GEOquery)
 library(biomaRt)
 library(tidyverse)
@@ -19,128 +19,40 @@ library(reshape2)
 ```{r}
 gds <- getGEO("GDS507")
 str(gds)
-```
-
-```{r}
-meta_data <- data.frame(Sample = gds@dataTable@columns$sample, disease = gds@dataTable@columns$disease.state)
-#we grab this info from the appropriate slots above. 
-
+meta_data <- data.frame(Sample = gds@dataTable@columns$sample, disease = gds@dataTable@columns$disease.state) #we grab this info from the appropriate slots above. 
 data <- gds@dataTable@table
-```
-
-```{r}
 head(data)
-nrow(data)
-ncol(data)
 dim(data)
-
-#We exclude the first and second columns because they hold the probe and gene names, respectively. 
 apply(data[,-c(1, 2)], 2, median)
-```
-
-# Iris
-
-```{r}
-head(iris)
-#select all rows with sepal length greater than 5. 
-iris %>% 
-    filter(Sepal.Length > 5) %>% 
-    head()
-
-#group all rows of the same species together.
-iris %>% 
-    group_by(Species) %>% 
-    head()
-
-#select the column called "Sepal.Width"
-iris %>% 
-    dplyr::select(Sepal.Width) %>% 
-    head()
-#create another column with the species name capitalized. 
-iris %>%
-    group_by(Species) %>% 
-    mutate(Capitalized_names = toupper(Species)) %>% 
-    head()
-#summarize the average sepal length and number of rows belonging to each species.
-iris %>% 
-    group_by(Species) %>% 
-    summarize(average_sepal_length = mean(Sepal.Length), n = n()) %>% 
-    head()
-#arrange the species in alphabetical order
-iris %>% 
-    arrange(desc(Species)) %>% 
-    head()
 melted_data <- melt(data, id.vars = c("ID_REF", "IDENTIFIER"), var = "Sample")
 head(melted_data)
 
+#mean gene expression per sample
 melted_data %>% 
     group_by(Sample) %>% 
     summarize(mean = mean(value))
 
+#mean of each probe's expression
 new_melted_data <- melted_data %>% 
     group_by(Sample, IDENTIFIER) %>% 
     summarize(Count = mean(value))
-```
 
-```{r}
-#open connection between biomaRt and R. 
-human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 #function that takes in data frame, and outputs same data frame with associated chromosome annotations.
 identify_gene_names <- function(df){
     names(df) <- c("Sample", "hgnc_symbol", "Count")
-    names <- getBM( attributes=c("hgnc_symbol", "chromosome_name") , filters= "hgnc_symbol", values = df$hgnc_symbol, mart = human)
+    names <- getBM(attributes=c("hgnc_symbol", "chromosome_name") , filters= "hgnc_symbol", values = df$hgnc_symbol, mart = human)
     left_join(df, names, by = "hgnc_symbol")
 }
 
-#There's a lot of variation in how the chromosomal location is annotated. To simplify things, let's filter out all genes with annotations that are not numeric numbers between 1 and 23, X or Y. 
-data_with_chromosome <- identify_gene_names(new_melted_data) %>% 
-    filter(chromosome_name %in% c(1:23, "X", "Y"))
-```
+data_with_chromosome <- read.csv("https://raw.githubusercontent.com/STAT540-UBC/STAT540-UBC.github.io/master/seminars/seminars_winter_2017/Seminar3/biomart_output.csv", header=TRUE)
 
-# Part 2
-
-```{r}
-#We exclude the first and second columns because they hold the probe and gene names, respectively. 
-apply(data[,-c(1, 2)], 2, median)
-
-melted_data <- melt(data, id.vars = c("ID_REF", "IDENTIFIER"), var = "Sample")
-head(melted_data)
-
-melted_data %>% 
-    group_by(Sample) %>% 
-    summarize(mean = mean(value))
-
-new_melted_data <- melted_data %>% 
-    group_by(Sample, IDENTIFIER) %>% 
-    summarize(Count = mean(value))
-```
-```{r}
-#open connection between biomaRt and R. 
-#human <- useMart(biomart = "ENSEMBL_MART_ENSEMBL",dataset = "hsapiens_gene_ensembl", host = #"http://www.ensembl.org" )
-
-#function that takes in data frame, and outputs same data frame with associated chromosome annotations.
-#identify_gene_names <- function(df){
-#    names(df) <- c("Sample", "hgnc_symbol", "Count")
-#    names <- getBM( attributes=c("hgnc_symbol", "chromosome_name", "transcript_length") , filters= #"hgnc_symbol", values = df$hgnc_symbol, mart = human)
-#    left_join(df, names, by = "hgnc_symbol")
-#}
-
-#There's a lot of variation in how the chromosomal location is annotated. To simplify things, let's filter out all genes with annotations that are not numeric numbers between 1 and 23, X or Y. 
-#data_with_chromosome <- identify_gene_names(new_melted_data) %>% 
-#    filter(chromosome_name %in% c(1:23, "X", "Y"))
-```
-
-```{r}
 full_data <- left_join(data_with_chromosome, meta_data, by = "Sample")
+
 full_data %>% 
     group_by(disease) %>% 
     filter(chromosome_name == "X") %>% 
     summarize(mean = mean(Count))
-```
 
-# Part 3
-
-```{r}
 #choose random number between 1 and however many genes we have. 
 sample_to_choose <- sample(1:length(unique(full_data$hgnc_symbol)), size = 100)
 #choose genes that correspond to those numbers in a list of genes. 
@@ -148,7 +60,19 @@ names_to_choose <- as.character(unique(full_data$hgnc_symbol)[sample_to_choose])
 
 full_data %>% 
     filter(hgnc_symbol %in% names_to_choose) %>% 
-    group_by(Sample) %>% 
-    ggplot(aes(x = as.factor(chromosome_name), y = Count)) + geom_point()
+    group_by(Sample) %>% mutate(relExp = Count/sum(Count)) %>%
+    ggplot(aes(x = as.factor(chromosome_name), y = relExp)) + geom_point()
+
+full_data %>% 
+    group_by(hgnc_symbol) %>% 
+   summarize( pvalue = t.test(Count ~ disease)$p.value) %>%
+   ggplot(aes(x = pvalue)) + geom_density() 
+ 
+data_05 <- full_data %>% 
+    group_by(hgnc_symbol) %>% 
+    summarize(pvalue = t.test(Count ~ disease)$p.value) %>% 
+  filter(pvalue < 0.05)
+
+data_05
 ```
 
